@@ -54,7 +54,7 @@ func (client *CouchbaseCloudClient) ListProjects(options *ListProjectsOptions) (
 }
 
 // ListProjectPages allows iterating over all the projects. For every page of project items it will call the callback
-// and pass the page worth of clouds as well as a boolean that indicates whether is is the last page or not. The
+// and pass the page worth of projects as well as a boolean that indicates whether is is the last page or not. The
 // function iterates over all the pages either until the callback returns false, the REST endpoint returns an error
 // or it runs out of pages.
 func (client *CouchbaseCloudClient) ListProjectPages(opts *ListProjectsOptions, fn func(Projects, bool) bool) error {
@@ -64,16 +64,16 @@ func (client *CouchbaseCloudClient) ListProjectPages(opts *ListProjectsOptions, 
 	}
 
 	for {
-		clouds, err := client.ListProjects(&localOpts)
+		projects, err := client.ListProjects(&localOpts)
 		if err != nil {
 			return err
 		}
 
-		if len(clouds.Data) == 0 {
+		if len(projects.Data) == 0 {
 			return nil
 		}
 
-		cont := fn(clouds.Data, clouds.Cursor.Pages.Last >= clouds.Cursor.Pages.Page)
+		cont := fn(projects.Data, projects.Cursor.Pages.Last >= projects.Cursor.Pages.Page)
 		if !cont {
 			return nil
 		}
