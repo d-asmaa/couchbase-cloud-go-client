@@ -4,6 +4,9 @@ import (
 	"net/http"
 )
 
+type BucketsList struct {
+}
+
 type BucketCreatePayload struct {
 	Name        string `json:"name"`
 	MemoryQuota int    `json:"memoryQuota"`
@@ -11,6 +14,23 @@ type BucketCreatePayload struct {
 
 type BucketDeletePayload struct {
 	Name string `json:"name"`
+}
+
+func (client *CouchbaseCloudClient) ListBuckets(cluster *Cluster) (*BucketsList, error) {
+	cloudsUrl := client.BaseURL + client.getApiEndpoint("/clusters/"+cluster.Id+"/buckets")
+
+	req, err := http.NewRequest(http.MethodGet, cloudsUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res := BucketsList{}
+
+	if err := client.sendRequest(req, &res, true); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func (client *CouchbaseCloudClient) CreateBucket(cluster *Cluster, payload *BucketCreatePayload) error {
