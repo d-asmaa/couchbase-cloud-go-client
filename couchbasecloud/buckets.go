@@ -5,6 +5,16 @@ import (
 )
 
 type BucketsList struct {
+	Cursor Cursor   `json:"cursor"`
+	Data   []Bucket `json:"data"`
+}
+
+type Bucket struct {
+	Name               string `json:"name"`
+	MemoryQuota        int    `json:"memoryQuota"`
+	Replicas           int    `json:"replicas"`
+	ConflictResolution string `json:"conflictResolution"` // TODO: enum type
+	Status             string `json:"string"`
 }
 
 type BucketCreatePayload struct {
