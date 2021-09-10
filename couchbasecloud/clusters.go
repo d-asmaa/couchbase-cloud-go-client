@@ -139,7 +139,7 @@ func (client *CouchbaseCloudClient) CreateCluster(payload *ClusterCreatePayload)
 func (client *CouchbaseCloudClient) DeleteCluster(cluster *Cluster) error {
 	cloudsUrl := client.BaseURL + client.getApiEndpoint(clustersUrl)
 
-	req, err := http.NewRequest(http.MethodDelete, cloudsUrl+cluster.Id, nil)
+	req, err := http.NewRequest(http.MethodDelete, cloudsUrl+"/"+cluster.Id, nil)
 	if err != nil {
 		return err
 	}
