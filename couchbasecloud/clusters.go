@@ -31,10 +31,20 @@ type ListClustersOptions struct {
 	ProjectId *string `json:"projectId"`
 }
 
-const listClustersUrl = "/clusters"
+type ClusterCreatePayload struct {
+	Name      string `json:"name`
+	CloudId   string `json:"cloudId"`
+	ProjectId string `json:"projectId"`
+	// TO ADD:
+	// Servers        []Server                            `json:servers`
+	// SupportPackage *CreateClusterRequestSupportPackage `json:supportPackage`
+	// Version        *ClusterVersions                    `json:version`
+}
+
+const clustersUrl = "/clusters"
 
 func (client *CouchbaseCloudClient) ListClusters(options *ListClustersOptions) (*ClustersList, error) {
-	cloudsUrl := client.BaseURL + client.getApiEndpoint(listClustersUrl)
+	cloudsUrl := client.BaseURL + client.getApiEndpoint(clustersUrl)
 
 	if options != nil {
 		setListClustersParams(&cloudsUrl, *options)
@@ -109,4 +119,34 @@ func setListClustersParams(clustersUrl *string, options ListClustersOptions) {
 	if urlParams := params.Encode(); urlParams != "" {
 		*clustersUrl += "?" + urlParams
 	}
+}
+
+func (client *CouchbaseCloudClient) CreateCluster(payload *ClusterCreatePayload) error {
+	cloudsUrl := client.BaseURL + client.getApiEndpoint(clustersUrl)
+
+	req, err := http.NewRequest(http.MethodPost, cloudsUrl, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := client.sendRequest(req, payload, true); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *CouchbaseCloudClient) DeleteCluster(cluster *Cluster) error {
+	cloudsUrl := client.BaseURL + client.getApiEndpoint(clustersUrl)
+
+	req, err := http.NewRequest(http.MethodDelete, cloudsUrl+"/"+cluster.Id, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := client.sendRequest(req, nil, false); err != nil {
+		return err
+	}
+
+	return nil
 }
