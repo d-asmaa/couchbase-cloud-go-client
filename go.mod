@@ -1,3 +1,3 @@
-module github.com/couchbaselabs/couchbase-cloud-go-client
+module github.com/d-asmaa/couchbase-cloud-go-client
 
-go 1.15
+go 1.17
