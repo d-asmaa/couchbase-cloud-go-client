@@ -131,3 +131,18 @@ func (client *CouchbaseCloudClient) DeleteProject(project *Project) error {
 
 	return nil
 }
+
+func (client *CouchbaseCloudClient) GetProject(project *Project) error {
+	cloudsUrl := client.BaseURL + client.getApiEndpoint(projectsUrl)
+
+	req, err := http.NewRequest(http.MethodGet, cloudsUrl+"/"+project.Id, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := client.sendRequest(req, nil, false); err != nil {
+		return err
+	}
+
+	return nil
+}
