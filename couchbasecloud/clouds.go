@@ -56,7 +56,7 @@ func (client *CouchbaseCloudClient) ListClouds(options *ListCloudsOptions) (*Clo
 // the page worth of clouds as well as a boolean that indicates whether is is the last page or not.
 // The function iterates over all the pages either until the callback returns false, the REST endpoint returns an error
 // or it runs out of pages.
-func (client *CouchbaseCloudClient) ListCloudPages(options *ListCloudsOptions, fn func (Clouds, bool) bool) error {
+func (client *CouchbaseCloudClient) ListCloudPages(options *ListCloudsOptions, fn func(Clouds, bool) bool) error {
 	var localOpts ListCloudsOptions
 	if options != nil {
 		localOpts = *options
@@ -77,7 +77,7 @@ func (client *CouchbaseCloudClient) ListCloudPages(options *ListCloudsOptions, f
 			return nil
 		}
 
-		localOpts.Page ++
+		localOpts.Page++
 	}
 }
 
@@ -99,4 +99,19 @@ func setListCloudsParams(urlStr *string, options ListCloudsOptions) {
 	if urlParams := params.Encode(); urlParams != "" {
 		*urlStr += "?" + urlParams
 	}
+}
+
+func (client *CouchbaseCloudClient) GetCloud(cloudId string) error {
+	cloudsUrl := client.BaseURL + client.getApiEndpoint(listCloudsUrl)
+
+	req, err := http.NewRequest(http.MethodGet, cloudsUrl+"/"+cloudId, nil)
+	if err != nil {
+		return err
+	}
+
+	if err := client.sendRequest(req, nil, false); err != nil {
+		return err
+	}
+
+	return nil
 }
