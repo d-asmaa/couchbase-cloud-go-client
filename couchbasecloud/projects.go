@@ -1,6 +1,10 @@
 package couchbasecloud
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -105,12 +109,22 @@ func setListProjectsParams(projectsUrl *string, options ListProjectsOptions) {
 func (client *CouchbaseCloudClient) CreateProject(payload *CreateProjectPayload) error {
 	cloudsUrl := client.BaseURL + client.getApiEndpoint(projectsUrl)
 
-	req, err := http.NewRequest(http.MethodPost, cloudsUrl, nil)
+	var body io.Reader
+
+	if payload != nil {
+		b, err := json.Marshal(payload)
+		if err != nil {
+			return fmt.Errorf("failed to marshal body: %w", err)
+		}
+		body = bytes.NewReader(b)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, cloudsUrl, body)
 	if err != nil {
 		return err
 	}
 
-	if err := client.sendRequest(req, payload, true); err != nil {
+	if err := client.sendRequest(req, nil, true); err != nil {
 		return err
 	}
 
