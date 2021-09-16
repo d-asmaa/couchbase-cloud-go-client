@@ -1,6 +1,10 @@
 package couchbasecloud
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -124,7 +128,17 @@ func setListClustersParams(clustersUrl *string, options ListClustersOptions) {
 func (client *CouchbaseCloudClient) CreateCluster(payload *ClusterCreatePayload) error {
 	cloudsUrl := client.BaseURL + client.getApiEndpoint(clustersUrl)
 
-	req, err := http.NewRequest(http.MethodPost, cloudsUrl, nil)
+	var body io.Reader
+
+	if payload != nil {
+		b, err := json.Marshal(payload)
+		if err != nil {
+			return fmt.Errorf("failed to marshal body: %w", err)
+		}
+		body = bytes.NewReader(b)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, cloudsUrl, body)
 	if err != nil {
 		return err
 	}
